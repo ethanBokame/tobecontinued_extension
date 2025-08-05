@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="libs/supabase.min.js"></script>
+    <script src="login.js" defer></script>
+    <title>ToBeContinued</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 320px;
+            height: 420px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            overflow: hidden;
+        }
+
+        .popup-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            background: #009FFD;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .tv-icon {
+            width: 48px;
+            height: 40px;
+            border: 3px solid white;
+            border-radius: 8px;
+            position: relative;
+            margin-right: 12px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .tv-icon::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 12px;
+            border: 2px solid white;
+            border-radius: 4px;
+        }
+
+        .tv-icon::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 8px;
+            width: 12px;
+            height: 12px;
+            border: 2px solid white;
+            border-bottom: none;
+            border-left: none;
+            transform: rotate(-45deg);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-text .continued {
+            font-weight: 400;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .welcome-text {
+            color: #495057;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .connect-button {
+            background: #009FFD;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 159, 253, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .connect-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .connect-button:hover::before {
+            left: 100%;
+        }
+
+        .connect-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 159, 253, 0.4);
+        }
+
+        .connect-button:active {
+            transform: translateY(0);
+        }
+
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4285f4;
+            font-size: 12px;
+        }
+
+        .features {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .feature-icon {
+            width: 16px;
+            height: 16px;
+            background: #009FFD;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .footer-text {
+            color: #6c757d;
+            font-size: 11px;
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: rgba(0, 159, 253, 0.1);
+            border-radius: 50%;
+            animation: floatShape 8s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 150px;
+            right: -30px;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            bottom: 100px;
+            left: -20px;
+            animation-delay: 3s;
+        }
+
+        @keyframes floatShape {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <div class="decorative-elements">
+            <div class="floating-shape"></div>
+            <div class="floating-shape"></div>
+        </div>
+        
+        <div class="header">
+            <div class="logo">
+                <img src="images/logo1.png" alt="">
+                <div class="logo-text">
+                    ToBeContinued
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="welcome-text">Bienvenue !</div>
+            <div class="subtitle">Retrouvez où vous vous êtes arrêté<br>dans vos séries préférées</div>
+            
+            <button class="connect-button">
+                <div class="google-icon">G</div>
+                Se connecter avec Google
+            </button>
+
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>Synchronisation automatique</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>Suivi de progression</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>Multi-appareils</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-text">Extension ToBeContinued v1.0</div>
+        </div>
+    </div>
+</body>
+</html>
